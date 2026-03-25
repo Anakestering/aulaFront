@@ -1,40 +1,52 @@
-import {useState} from 'react'
-import { GerarToken } from '../utils/GerarToken';
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 
-export function Login(){
+export function Login() {
 
-const navigate = useNavigate()
-const [email, setEmail] = useState("");
-const [senha, setSenha] = useState("");
+    const navigate = useNavigate()
+    const [email, setEmail] = useState("");
+    const [senha, setSenha] = useState("");
 
-const fazerLogin = async (e) => {
-    e.preventDefault();
+    const fazerLogin = async (e) => {
+        e.preventDefault();
 
-    try{
+        try {
+            const resposta = await fetch('https://dummyjson.com/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: email,
+                    password: senha
+                })
+            })
 
-        const resposta = await fetch('https://dummyjson.com/auth/login', {
-            
-        })
+            if (resposta.ok) {
+                const dados = await resposta.json();
+                localStorage.setItem('token', dados.accessToken)
+                alert("Login realizado com sucesso.")
+                navigate("/dashboard")
+            } else {
+                alert("Usuário e/ou senha incorretos. Verifique e tente novamente.")
+            }
 
-    }catch{
+        } catch {
+            alert("Erro na conexão com o servidor.")
+        }
 
     }
-    
-}
-    return(
+    return (
         <div>
             <input
-            type="email"
-            name = "email"
-            placeholder="Digite o seu email..."
-            onChange={(e) => {setEmail(e.target.value)}}
+                type="text"
+                name="email"
+                placeholder="Digite o seu email..."
+                onChange={(e) => { setEmail(e.target.value) }}
             />
             <input
-            type="password"
-            name = "senha"
-            placeholder="Digite a senha..."
-            onChange={(e) => {setSenha(e.target.value)}}
+                type="password"
+                name="senha"
+                placeholder="Digite a senha..."
+                onChange={(e) => { setSenha(e.target.value) }}
             />
             <button onClick={fazerLogin}>ENTRAR</button>
         </div>
